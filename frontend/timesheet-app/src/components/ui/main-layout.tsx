@@ -101,18 +101,18 @@ function MainLayout<TData, TValue>({
         </SidebarContent>
       </Sidebar>
       <div className="w-full">
-        <div className="p-4 flex flex-row justify-between">
-          <div className="flex flex-row gap-4 items-center">
-            <SidebarTrigger />
+        <div className="flex flex-row justify-between">
+          <div className="flex flex-row items-center">
+            <SidebarTrigger className="m-4" />
             <Separator orientation="vertical" />
-            <div className="pl-1">{title}</div>
+            <div className="my-4 mx-6 font-medium">{title}</div>
           </div>
-          {action}
+          <div className='m-4'>{action}</div>
         </div>
         <Separator />
         {children && (
           <div>
-            <div className="p-4">{children}</div>
+            <div>{children}</div>
             <Separator />
           </div>
         )}

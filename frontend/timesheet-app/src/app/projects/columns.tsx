@@ -1,28 +1,45 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { Badge } from '@/components/ui/badge';
 import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '@/components/ui/dropdown-menu';
+  Sheet,
+  SheetTrigger,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetContent,
+} from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Ellipsis, PencilLine, Trash2 } from 'lucide-react';
+import { ProjectForm } from './project-form';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { PencilLine, Trash2 } from 'lucide-react';
+
+function deleteProject(id: string) {
+  console.log(`DELETE PROJECT id=${id}`);
+}
 
 export type Project = {
   id: string;
   name: string;
   client: string;
-  billingMethod: 'retainer' | 'hourly';
+  billingMethod: 'Retainer' | 'Hourly';
   billingAmount: number;
 };
 
 export const columns: ColumnDef<Project>[] = [
   {
     accessorKey: 'name',
-    header: 'Name',
+    header: 'Project name',
   },
   {
     accessorKey: 'client',
@@ -31,15 +48,6 @@ export const columns: ColumnDef<Project>[] = [
   {
     accessorKey: 'billingMethod',
     header: 'Billing method',
-    cell: ({ row }) => {
-      if (row.original.billingMethod === 'retainer') {
-        return <Badge variant="neutral1">Retainer</Badge>;
-      } else if (row.original.billingMethod === 'hourly') {
-        return <Badge variant="neutral2">Hourly</Badge>;
-      } else {
-        return null;
-      }
-    },
   },
   {
     accessorKey: 'billingAmount',
@@ -57,23 +65,50 @@ export const columns: ColumnDef<Project>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex justify-end">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+          <Sheet>
+            <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
-                <Ellipsis />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>
                 <PencilLine />
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem variant="destructive">
+              </Button>
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>Edit {row.original.name}</SheetTitle>
+                <SheetDescription>
+                  Changes will be applied to new timesheet entries. Existing
+                  entries will not be affected.
+                </SheetDescription>
+              </SheetHeader>
+              <ProjectForm id={row.original.id} />
+            </SheetContent>
+          </Sheet>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="ghost" size="icon">
                 <Trash2 />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently delete project "{row.original.name}".
+                  Existing timesheet entries and invoices will not be deleted
+                  but you will not be able to create new ones.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => {
+                    deleteProject(row.original.id);
+                  }}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       );
     },
